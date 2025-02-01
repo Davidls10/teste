@@ -1,0 +1,10 @@
+FROM python:3.9
+
+WORKDIR /app
+
+COPY actuators/ ./actuators/
+COPY config.py ./
+
+RUN pip install grpcio grpcio-tools
+
+CMD ["python", "actuators/lamp_server.py"]

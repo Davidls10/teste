@@ -1,0 +1,10 @@
+FROM python:3.9
+
+WORKDIR /app
+
+COPY sensors/ ./sensors/
+COPY config.py ./
+
+RUN pip install kafka-python
+
+CMD ["python", "sensors/temperature_sensor.py"]
