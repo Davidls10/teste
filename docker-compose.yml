@@ -9,6 +9,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - mynetwork
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -19,38 +21,14 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
-      
-  gateway:
-    build: ./gateway
-    container_name: gateway
-    ports:
-      - "50051:50051"
-    depends_on:
-      - kafka
+    networks:
+      - mynetwork
 
-  sensors:
-    build: ./sensors
-    container_name: sensors
-    ports:
-      - "50052:50052"
-    depends_on:
-      - kafka
+networks:
+  mynetwork:
+    driver: bridge
 
-  actuators:
-    build: ./actuators
-    container_name: actuators
-    ports:
-      - "50053:50053"
-    depends_on:
-      - kafka
-
-  init-kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: init-kafka
-    depends_on:
-      - kafka
-    entrypoint: ["/bin/sh", "-c", "sleep 10 && kafka-topics --create --topic sensor-data --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"]
