@@ -1,9 +1,9 @@
 import time
 import json
 import random
-from config import get_broker_connection
+from broker_producer import get_broker_connection
 
-# Conectar ao broker (Kafka)
+# Conectar ao broker Kafka
 producer = get_broker_connection()
 
 TOPIC = "luminosity_data"

@@ -1,28 +1,32 @@
 import grpc
 from concurrent import futures
-import actuators.grpc_service_pb2 as grpc_messages
-import actuators.grpc_service_pb2_grpc as grpc_stub
+import lamp_service_pb2_grpc as grpc_service
+from lamp_service_pb2 import Empty
 
-class LampadaService(grpc_stub.LampServiceServicer):
-    estado = "desligado"
+class LampService(grpc_service.LampServiceServicer):
+    """Implementação do serviço gRPC para a lâmpada"""
+    
+    def __init__(self):
+        self.estado = "desligada"
 
     def LigarLampada(self, request, context):
-        self.estado = "ligado"
-        print("💡 Lâmpada ligada!")
-        return grpc_messages.Empty()
-    
+        self.estado = "ligada"
+        print("[Atuador] Lâmpada ligada.")
+        return Empty()
+
     def DesligarLampada(self, request, context):
-        self.estado = "desligado"
-        print("💡 Lâmpada desligada!")
-        return grpc_messages.Empty()
+        self.estado = "desligada"
+        print("[Atuador] Lâmpada desligada.")
+        return Empty()
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
-    grpc_stub.add_LampServiceServicer_to_server(LampadaService(), server)
-    server.add_insecure_port('[::]:50051')
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    grpc_service.add_LampServiceServicer_to_server(LampService(), server)
+    
+    server.add_insecure_port("[::]:50051")
     server.start()
-    print("🚀 Servidor gRPC de Lâmpada rodando na porta 50051")
+    print("[Atuador] Servidor gRPC rodando na porta 50051...")
     server.wait_for_termination()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     serve()

@@ -1,20 +1,28 @@
 import grpc
-import gateway.grpc_service_pb2 as grpc_messages
-import gateway.grpc_service_pb2_grpc as grpc_stub
+from actuators import lamp_service_pb2
+from actuators import lamp_service_pb2_grpc
 
-# Função para controlar a lâmpada via gRPC
-def control_lampada(action):
-    with grpc.insecure_channel('localhost:50051') as channel:
-        stub = grpc_stub.LampServiceStub(channel)
-        
-        if action == "ligar":
-            stub.LigarLampada(grpc_messages.Empty())
-            print("Lâmpada ligada")
-        elif action == "desligar":
-            stub.DesligarLampada(grpc_messages.Empty())
-            print("Lâmpada desligada")
+class LampClient:
+    def __init__(self, host="localhost", port=50051):
+        self.channel = grpc.insecure_channel(f"{host}:{port}")
+        self.stub = lamp_service_pb2_grpc.LampServiceStub(self.channel)  # Corrigido para LampServiceStub
 
-# Exemplo de uso
-if __name__ == '__main__':
-    action = input("Digite 'ligar' ou 'desligar' para a lâmpada: ")
-    control_lampada(action)
+    def ligar_lampada(self):
+        request = lamp_service_pb2.Empty()  # Usando a classe Empty para o request
+        response = self.stub.LigarLampada(request)
+        return response  # Retorna a resposta (Empty)
+
+    def desligar_lampada(self):
+        request = lamp_service_pb2.Empty()  # Usando a classe Empty para o request
+        response = self.stub.DesligarLampada(request)
+        return response  # Retorna a resposta (Empty)
+
+if __name__ == "__main__":
+    client = LampClient()
+
+    # Testando o controle da lâmpada
+    print("Ligando a lâmpada...")
+    client.ligar_lampada()  # Chama o método para ligar a lâmpada
+
+    print("Desligando a lâmpada...")
+    client.desligar_lampada()  # Chama o método para desligar a lâmpada

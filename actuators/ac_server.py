@@ -1,6 +1,6 @@
 import grpc
 from concurrent import futures
-import actuators.grpc_service_pb2_grpc as grpc_service
+import lamp_service_pb2_grpc as grpc_service
 from actuators.grpc_service_pb2 import Empty
 
 class LampService(grpc_service.LampServiceServicer):

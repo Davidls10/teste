@@ -23,4 +23,4 @@ def toggle_device(device):
     return jsonify({"error": "Dispositivo não encontrado"}), 404
 
 def start_rest_server():
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)

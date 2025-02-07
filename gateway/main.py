@@ -1,15 +1,14 @@
-from flask import Flask
-from threading import Thread
-import broker_consumer  # Importando o consumidor Kafka
-import rest_api  # Importando o arquivo REST API
+import threading
+from rest_api import start_rest_server
+from broker_consumer import start_broker_listener
 
-# Função para iniciar o consumidor Kafka em um thread separado
-def start_kafka_consumer():
-    consumer_thread = Thread(target=broker_consumer.consume_sensor_data)
-    consumer_thread.daemon = True
-    consumer_thread.start()
+if __name__ == "__main__":
+    # Iniciar API REST em uma thread separada
+    rest_thread = threading.Thread(target=start_rest_server)
+    rest_thread.start()
 
-# Iniciar o servidor Flask e o consumidor Kafka
-if __name__ == '__main__':
-    start_kafka_consumer()  # Inicia o consumidor Kafka
-    rest_api.app.run(host='0.0.0.0', port=5000)  # Inicia o servidor Flask
+    # Iniciar consumidor do Kafka
+    broker_thread = threading.Thread(target=start_broker_listener)
+    broker_thread.start()
+
+    print("🚀 Gateway iniciado!")
